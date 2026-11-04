@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>G550 Fuel Calculator</title>
+  <title>Jet A1 Fuel Calculator</title>
   <style>
     :root {
       --bg: #0f1419;
@@ -281,8 +281,8 @@
 <body>
   <div class="container">
     <header>
-      <h1>G550 Fuel Calculator</h1>
-      <p>lbs → US Gal / Liters · 含油溫密度修正</p>
+      <h1>Jet A1 Fuel Calculator</h1>
+      <p>G550 · lbs → US Gal / Liters · 含油溫密度修正</p>
     </header>
 
     <!-- Calculator -->
@@ -399,12 +399,12 @@
 
       <div class="note">
         <strong>Note:</strong> 實際加油時請以油車密度與飛機油量表為準。<br><br>
-        <strong>溫度密度修正：</strong> AFM 以 6.75 lbs/gal（約 0°C）為基準。油溫每升高 1°C，密度約降低 0.0058 lbs/gal（對應 Jet A 典型熱膨脹係數）。更改油溫會自動更新密度並重算體積；也可直接手動輸入實際密度覆寫。
+        <strong>溫度密度修正：</strong> AFM 以 6.75 lbs/gal（約 0°C）為基準。油溫每升高 1°C，密度約降低 0.0058 lbs/gal（對應 Jet A-1 典型熱膨脹係數）。更改油溫會自動更新密度並重算體積；也可直接手動輸入實際密度覆寫。
       </div>
     </div>
 
     <footer>
-      G550 Fuel Calculator · AFM 6.75 lbs/gal @ 0°C
+      Jet A1 Fuel Calculator · G550 · AFM 6.75 lbs/gal @ 0°C
     </footer>
   </div>
 
@@ -412,7 +412,7 @@
     const US_GAL_TO_L = 3.785411784;
     const AFM_DENSITY = 6.75;          // lbs/US gal at reference temp
     const REF_TEMP_C = 0;              // AFM reference temperature (°C)
-    const DENSITY_SLOPE = -0.0058;     // lb/gal per °C (typical Jet A)
+    const DENSITY_SLOPE = -0.0058;     // lb/gal per °C (typical Jet A-1)
 
     let densityManuallyEdited = false;
 

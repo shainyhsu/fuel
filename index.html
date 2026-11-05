@@ -146,26 +146,40 @@
     .result-item {
       background: var(--bg);
       border-radius: 8px;
-      padding: 14px 16px;
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
     }
 
     .result-label {
       font-size: 0.875rem;
       color: var(--muted);
+      flex-shrink: 0;
     }
 
-    .result-value {
-      font-size: 1.25rem;
+    .result-item input {
+      text-align: right;
+      font-size: 1.2rem;
       font-weight: 700;
-      font-variant-numeric: tabular-nums;
+      color: var(--green);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 6px 8px;
+      width: 140px;
+      max-width: 50%;
     }
 
-    .result-value.highlight { color: var(--green); }
-    .result-value.warn { color: var(--amber); }
-    .result-value.danger { color: var(--red); }
+    .result-item input:focus {
+      border-color: var(--accent);
+      background: var(--card);
+    }
+
+    .result-item input.warn {
+      color: var(--amber);
+    }
 
     .btn-row {
       display: flex;
@@ -276,6 +290,14 @@
       color: var(--muted);
       margin-top: 2px;
     }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 8px;
+      opacity: 0.8;
+    }
   </style>
 </head>
 <body>
@@ -328,26 +350,26 @@
       </div>
 
       <div class="btn-row">
-        <button type="button" onclick="calculate()">計算</button>
+        <button type="button" onclick="calculateFromWeight()">計算</button>
         <button type="button" class="secondary" onclick="clearAll()">清除</button>
       </div>
     </div>
 
-    <!-- Results -->
+    <!-- Results (editable) -->
     <div class="card" id="resultsCard" style="display: none;">
-      <div class="card-title">需加燃油 (Fuel to Uplift)</div>
+      <div class="card-title">需加燃油 (Fuel to Uplift) · 可直接輸入</div>
       <div class="results">
         <div class="result-item">
           <span class="result-label">lbs</span>
-          <span class="result-value highlight" id="addLbs">—</span>
+          <input type="number" id="addLbs" inputmode="decimal" placeholder="0" />
         </div>
         <div class="result-item">
-          <span class="result-label">US Gallons <small style="opacity:0.7">(FBO Fuel Release)</small></span>
-          <span class="result-value highlight" id="addGal">—</span>
+          <span class="result-label">US Gallons <small style="opacity:0.7">(FBO)</small></span>
+          <input type="number" id="addGal" inputmode="decimal" placeholder="0" />
         </div>
         <div class="result-item">
-          <span class="result-label">Liters <small style="opacity:0.7">(公制油車)</small></span>
-          <span class="result-value highlight" id="addLiters">—</span>
+          <span class="result-label">Liters <small style="opacity:0.7">(油車)</small></span>
+          <input type="number" id="addLiters" inputmode="decimal" placeholder="0" />
         </div>
       </div>
 
@@ -361,6 +383,8 @@
           <div class="q-label">總油量 Liters</div>
         </div>
       </div>
+
+      <p class="hint">可從任意欄位輸入（lbs / Gal / L），其餘自動換算</p>
     </div>
 
     <!-- Limitations -->
@@ -410,11 +434,18 @@
 
   <script>
     const US_GAL_TO_L = 3.785411784;
-    const AFM_DENSITY = 6.75;          // lbs/US gal at reference temp
-    const REF_TEMP_C = 0;              // AFM reference temperature (°C)
-    const DENSITY_SLOPE = -0.0058;     // lb/gal per °C (typical Jet A-1)
+    const AFM_DENSITY = 6.75;
+    const REF_TEMP_C = 0;
+    const DENSITY_SLOPE = -0.0058;
 
     let densityManuallyEdited = false;
+    let updating = false; // prevent recursive input events
+
+    function getDensity() {
+      let d = parseFloat(document.getElementById('density').value);
+      if (isNaN(d) || d <= 0) d = AFM_DENSITY;
+      return d;
+    }
 
     function densityFromTemp(tempC) {
       return AFM_DENSITY + DENSITY_SLOPE * (tempC - REF_TEMP_C);
@@ -429,50 +460,114 @@
       document.getElementById('usedDensity').textContent = d.toFixed(3);
     }
 
-    function calculate() {
+    function showResults() {
+      document.getElementById('resultsCard').style.display = 'block';
+    }
+
+    function updateTotals(desiredLbs, density) {
+      if (desiredLbs > 0) {
+        const totalGal = desiredLbs / density;
+        const totalLiters = totalGal * US_GAL_TO_L;
+        document.getElementById('totalGal').textContent = Math.round(totalGal).toLocaleString();
+        document.getElementById('totalLiters').textContent = Math.round(totalLiters).toLocaleString();
+        document.getElementById('totalRef').style.display = 'grid';
+      } else {
+        document.getElementById('totalRef').style.display = 'none';
+      }
+    }
+
+    function setUpliftFields(lbs, gal, liters, warn) {
+      updating = true;
+      document.getElementById('addLbs').value = Math.round(lbs);
+      document.getElementById('addGal').value = Math.round(gal);
+      document.getElementById('addLiters').value = Math.round(liters);
+      document.getElementById('addLbs').className = warn ? 'warn' : '';
+      updating = false;
+    }
+
+    // From top: Remaining + Desired → Uplift
+    function calculateFromWeight() {
       const remaining = parseFloat(document.getElementById('remaining').value) || 0;
       const desired = parseFloat(document.getElementById('desired').value) || 0;
-      let density = parseFloat(document.getElementById('density').value);
-
-      if (isNaN(density) || density <= 0) {
-        density = AFM_DENSITY;
-        document.getElementById('density').value = density.toFixed(3);
-      }
-
+      const density = getDensity();
       document.getElementById('usedDensity').textContent = density.toFixed(3);
 
       const addLbs = desired - remaining;
-
-      const resultsCard = document.getElementById('resultsCard');
-      resultsCard.style.display = 'block';
+      showResults();
 
       if (addLbs <= 0) {
-        document.getElementById('addLbs').textContent = addLbs.toFixed(0);
-        document.getElementById('addLbs').className = 'result-value warn';
-        document.getElementById('addGal').textContent = '0';
-        document.getElementById('addLiters').textContent = '0';
+        setUpliftFields(addLbs, 0, 0, true);
         document.getElementById('totalRef').style.display = 'none';
         return;
       }
 
       const addGal = addLbs / density;
       const addLiters = addGal * US_GAL_TO_L;
+      setUpliftFields(addLbs, addGal, addLiters, desired > 41300);
+      updateTotals(desired, density);
+    }
 
-      document.getElementById('addLbs').textContent = Math.round(addLbs).toLocaleString();
-      document.getElementById('addLbs').className = 'result-value highlight';
-      document.getElementById('addGal').textContent = Math.round(addGal).toLocaleString();
-      document.getElementById('addLiters').textContent = Math.round(addLiters).toLocaleString();
+    // From uplift lbs → update gal/L + Desired Total
+    function fromUpliftLbs() {
+      if (updating) return;
+      const remaining = parseFloat(document.getElementById('remaining').value) || 0;
+      const addLbs = parseFloat(document.getElementById('addLbs').value) || 0;
+      const density = getDensity();
 
-      // Total after uplift
-      const totalGal = desired / density;
-      const totalLiters = totalGal * US_GAL_TO_L;
-      document.getElementById('totalGal').textContent = Math.round(totalGal).toLocaleString();
-      document.getElementById('totalLiters').textContent = Math.round(totalLiters).toLocaleString();
-      document.getElementById('totalRef').style.display = 'grid';
+      const addGal = addLbs / density;
+      const addLiters = addGal * US_GAL_TO_L;
+      const desired = remaining + addLbs;
 
-      if (desired > 41300) {
-        document.getElementById('addLbs').className = 'result-value warn';
-      }
+      updating = true;
+      document.getElementById('addGal').value = Math.round(addGal);
+      document.getElementById('addLiters').value = Math.round(addLiters);
+      document.getElementById('desired').value = Math.round(desired);
+      document.getElementById('addLbs').className = desired > 41300 ? 'warn' : '';
+      updating = false;
+
+      updateTotals(desired, density);
+    }
+
+    // From uplift gallons → update lbs/L + Desired Total
+    function fromUpliftGal() {
+      if (updating) return;
+      const remaining = parseFloat(document.getElementById('remaining').value) || 0;
+      const addGal = parseFloat(document.getElementById('addGal').value) || 0;
+      const density = getDensity();
+
+      const addLbs = addGal * density;
+      const addLiters = addGal * US_GAL_TO_L;
+      const desired = remaining + addLbs;
+
+      updating = true;
+      document.getElementById('addLbs').value = Math.round(addLbs);
+      document.getElementById('addLiters').value = Math.round(addLiters);
+      document.getElementById('desired').value = Math.round(desired);
+      document.getElementById('addLbs').className = desired > 41300 ? 'warn' : '';
+      updating = false;
+
+      updateTotals(desired, density);
+    }
+
+    // From uplift liters → update lbs/Gal + Desired Total
+    function fromUpliftLiters() {
+      if (updating) return;
+      const remaining = parseFloat(document.getElementById('remaining').value) || 0;
+      const addLiters = parseFloat(document.getElementById('addLiters').value) || 0;
+      const density = getDensity();
+
+      const addGal = addLiters / US_GAL_TO_L;
+      const addLbs = addGal * density;
+      const desired = remaining + addLbs;
+
+      updating = true;
+      document.getElementById('addLbs').value = Math.round(addLbs);
+      document.getElementById('addGal').value = Math.round(addGal);
+      document.getElementById('desired').value = Math.round(desired);
+      document.getElementById('addLbs').className = desired > 41300 ? 'warn' : '';
+      updating = false;
+
+      updateTotals(desired, density);
     }
 
     function clearAll() {
@@ -483,43 +578,47 @@
       densityManuallyEdited = false;
       document.getElementById('usedDensity').textContent = '6.75';
       document.getElementById('resultsCard').style.display = 'none';
+      updating = true;
+      document.getElementById('addLbs').value = '';
+      document.getElementById('addGal').value = '';
+      document.getElementById('addLiters').value = '';
+      updating = false;
     }
 
-    // Temperature change → auto update density (unless manually overridden)
+    // Event listeners
     document.getElementById('temp').addEventListener('input', () => {
       densityManuallyEdited = false;
       updateDensityFromTemp();
       if (document.getElementById('remaining').value || document.getElementById('desired').value) {
-        calculate();
+        calculateFromWeight();
       }
     });
 
-    // Manual density edit
     document.getElementById('density').addEventListener('input', () => {
       densityManuallyEdited = true;
       const d = parseFloat(document.getElementById('density').value);
-      if (!isNaN(d)) {
-        document.getElementById('usedDensity').textContent = d.toFixed(3);
-      }
+      if (!isNaN(d)) document.getElementById('usedDensity').textContent = d.toFixed(3);
       if (document.getElementById('remaining').value || document.getElementById('desired').value) {
-        calculate();
+        calculateFromWeight();
       }
     });
 
-    // Auto-calculate on main inputs
     ['remaining', 'desired'].forEach(id => {
       document.getElementById(id).addEventListener('input', () => {
         if (document.getElementById('remaining').value || document.getElementById('desired').value) {
-          calculate();
+          calculateFromWeight();
         }
       });
     });
 
+    document.getElementById('addLbs').addEventListener('input', fromUpliftLbs);
+    document.getElementById('addGal').addEventListener('input', fromUpliftGal);
+    document.getElementById('addLiters').addEventListener('input', fromUpliftLiters);
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') calculate();
+      if (e.key === 'Enter') calculateFromWeight();
     });
 
-    // Initialize
     updateDensityFromTemp();
   </script>
 </body>

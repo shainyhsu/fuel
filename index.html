@@ -6,48 +6,29 @@
   <title>Jet A Fuel Calculator</title>
   <style>
     :root {
-      --bg: #0f1419;
-      --card: #1a2332;
-      --border: #2d3a4f;
-      --text: #e8eef7;
-      --muted: #8b9bb4;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
-      --green: #22c55e;
-      --amber: #f59e0b;
-      --red: #ef4444;
+      --bg: #0c1410;
+      --card: #152019;
+      --border: #2a3d32;
+      --text: #e6f0ea;
+      --muted: #8aa896;
+      --accent: #3d9b6e;
+      --accent-hover: #2f7d58;
+      --green: #5ecf8a;
+      --amber: #d4a017;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
       padding: 16px;
       min-height: 100vh;
     }
-
     .container { max-width: 480px; margin: 0 auto; }
-
-    header {
-      text-align: center;
-      margin-bottom: 24px;
-      padding-top: 8px;
-    }
-
-    header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    header p {
-      color: var(--muted);
-      font-size: 0.875rem;
-      margin-top: 4px;
-    }
+    header { text-align: center; margin-bottom: 20px; padding-top: 8px; }
+    header h1 { font-size: 1.5rem; font-weight: 700; }
+    header p { color: var(--muted); font-size: 0.875rem; margin-top: 4px; }
 
     .card {
       background: var(--card);
@@ -56,61 +37,90 @@
       padding: 20px;
       margin-bottom: 16px;
     }
-
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
     .card-title {
       font-size: 0.8rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--muted);
-      margin-bottom: 16px;
     }
 
-    .input-group { margin-bottom: 16px; }
-    .input-group:last-child { margin-bottom: 0; }
+    /* Unit toggle */
+    .unit-toggle {
+      display: flex;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .unit-toggle button {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      flex: none;
+    }
+    .unit-toggle button.active {
+      background: var(--accent);
+      color: #fff;
+    }
 
+    .input-group { margin-bottom: 14px; }
     label {
       display: block;
       font-size: 0.875rem;
       color: var(--muted);
       margin-bottom: 6px;
     }
-
     .input-row {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-
     input[type="number"] {
       flex: 1;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 12px 14px;
-      font-size: 1.125rem;
-      font-weight: 600;
+      font-size: 1.35rem;
+      font-weight: 700;
       color: var(--text);
       width: 100%;
+      text-align: right;
       -moz-appearance: textfield;
     }
-
     input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    input[type="number"]:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus { outline: none; border-color: var(--accent); }
     .unit {
       font-size: 0.875rem;
       font-weight: 600;
       color: var(--muted);
-      min-width: 36px;
+      min-width: 42px;
+    }
+
+    .remaining-split {
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      gap: 8px;
+    }
+    .remaining-split .input-row { min-width: 0; }
+    .remaining-split .rem-temp input { font-size: 1.1rem; padding: 12px 8px; }
+    .rem-temp-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 4px;
+      opacity: 0.8;
     }
 
     .temp-density-row {
@@ -121,13 +131,8 @@
       padding-top: 14px;
       border-top: 1px solid var(--border);
     }
-
     .temp-density-row .input-group { margin-bottom: 0; }
-
-    .temp-density-row input {
-      font-size: 1rem;
-      padding: 10px 12px;
-    }
+    .temp-density-row input { font-size: 1.1rem; padding: 10px 12px; }
 
     .density-display {
       margin-top: 10px;
@@ -135,60 +140,11 @@
       color: var(--muted);
       text-align: center;
     }
+    .density-display span { color: var(--accent); font-weight: 600; }
 
-    .density-display span {
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .results { display: grid; gap: 10px; }
-
-    .result-item {
-      background: var(--bg);
-      border-radius: 8px;
-      padding: 10px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .result-label {
-      font-size: 0.875rem;
-      color: var(--muted);
-      flex-shrink: 0;
-    }
-
-    .result-item input {
-      text-align: right;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--green);
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: 6px;
-      padding: 6px 8px;
-      width: 140px;
-      max-width: 50%;
-    }
-
-    .result-item input:focus {
-      border-color: var(--accent);
-      background: var(--card);
-    }
-
-    .result-item input.warn {
-      color: var(--amber);
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    button {
-      flex: 1;
+    .btn-row { display: flex; gap: 10px; margin-top: 16px; }
+    button.primary {
+      flex: 3;
       background: var(--accent);
       color: white;
       border: none;
@@ -197,24 +153,72 @@
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s;
     }
-
-    button:hover { background: var(--accent-hover); }
-
+    button.primary:hover { background: var(--accent-hover); }
     button.secondary {
+      flex: 1;
       background: transparent;
       border: 1px solid var(--border);
       color: var(--muted);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
     }
+    button.secondary:hover { background: var(--border); color: var(--text); }
 
-    button.secondary:hover {
-      background: var(--border);
-      color: var(--text);
+    .results { display: grid; gap: 10px; }
+    .result-item {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+    }
+    .result-label { font-size: 0.8rem; color: var(--muted); }
+    .result-item input {
+      text-align: right;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--green);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      width: 100%;
+      min-width: 0;
+    }
+    .result-item input:focus { border-color: var(--accent); outline: none; }
+    .result-item input.warn { color: var(--amber); }
+
+    .quick-ref {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .quick-item {
+      background: var(--bg);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+    .quick-item .q-val { font-weight: 700; font-size: 1rem; }
+    .quick-item .q-label { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 8px;
+      opacity: 0.85;
     }
 
     .limitations { font-size: 0.875rem; }
-
     .limitations h3 {
       font-size: 0.8rem;
       font-weight: 600;
@@ -223,39 +227,25 @@
       color: var(--muted);
       margin-bottom: 12px;
     }
-
     .limit-table { width: 100%; border-collapse: collapse; }
-
     .limit-table td {
       padding: 8px 0;
       border-bottom: 1px solid var(--border);
       vertical-align: top;
     }
-
     .limit-table tr:last-child td { border-bottom: none; }
-
-    .limit-table td:first-child {
-      color: var(--muted);
-      padding-right: 12px;
-      width: 55%;
-    }
-
-    .limit-table td:last-child {
-      text-align: right;
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-    }
+    .limit-table td:first-child { color: var(--muted); padding-right: 12px; width: 55%; }
+    .limit-table td:last-child { text-align: right; font-weight: 600; }
 
     .note {
       margin-top: 14px;
       padding: 12px;
-      background: rgba(59, 130, 246, 0.1);
+      background: rgba(61, 155, 110, 0.12);
       border-radius: 8px;
       font-size: 0.8rem;
       color: var(--muted);
       line-height: 1.45;
     }
-
     .note strong { color: var(--text); }
 
     footer {
@@ -265,65 +255,44 @@
       font-size: 0.75rem;
       color: var(--muted);
     }
-
-    .quick-ref {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .quick-item {
-      background: var(--bg);
-      border-radius: 6px;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .quick-item .q-val {
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .quick-item .q-label {
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .hint {
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-align: center;
-      margin-top: 8px;
-      opacity: 0.8;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <h1>Jet A Fuel Calculator</h1>
-      <p>G550 · lbs ↔ US Gal / Liters · 含油溫密度修正</p>
+      <p>G550 · Weight ↔ US Gal / Liters · 油溫密度修正</p>
     </header>
 
-    <!-- Calculator -->
     <div class="card">
-      <div class="card-title">加油計算</div>
+      <div class="card-header">
+        <div class="card-title">加油計算</div>
+        <div class="unit-toggle">
+          <button type="button" id="btnLbs" class="active" onclick="setUnit('lb')">lbs</button>
+          <button type="button" id="btnKg" onclick="setUnit('kg')">kg</button>
+        </div>
+      </div>
 
       <div class="input-group">
-        <label for="remaining">落地後餘油 (Remaining)</label>
-        <div class="input-row">
-          <input type="number" id="remaining" inputmode="decimal" placeholder="0" value="" />
-          <span class="unit">lbs</span>
+        <label>落地後餘油 (Remaining)</label>
+        <div class="remaining-split">
+          <div class="input-row rem-wt">
+            <input type="number" id="remaining" inputmode="decimal" placeholder="0" />
+            <span class="unit" id="unitRem">lbs</span>
+          </div>
+          <div class="input-row rem-temp">
+            <input type="number" id="remainTemp" inputmode="decimal" placeholder="—" step="0.5" title="餘油溫度 (System Page)" />
+            <span class="unit">°C</span>
+          </div>
         </div>
+        <div class="rem-temp-hint" id="remainInfo">輸入餘油與溫度後顯示體積／密度</div>
       </div>
 
       <div class="input-group">
         <label for="desired">計畫目標油量 (Desired Total)</label>
         <div class="input-row">
-          <input type="number" id="desired" inputmode="decimal" placeholder="0" value="" />
-          <span class="unit">lbs</span>
+          <input type="number" id="desired" inputmode="decimal" placeholder="0" />
+          <span class="unit" id="unitDes">lbs</span>
         </div>
       </div>
 
@@ -338,42 +307,41 @@
         <div class="input-group">
           <label for="density">密度 (可手動覆寫)</label>
           <div class="input-row">
-            <input type="number" id="density" inputmode="decimal" value="6.75" step="0.01" />
-            <span class="unit">lb/gal</span>
+            <input type="number" id="density" inputmode="decimal" value="6.75" step="0.001" />
+            <span class="unit" id="unitDen">lb/gal</span>
           </div>
         </div>
       </div>
 
       <div class="density-display">
-        目前使用密度：<span id="usedDensity">6.75</span> lbs/US gal
-        <br><small style="opacity:0.75">AFM 基準：6.75 @ 0°C · 修正係數 −0.0058 /°C</small>
+        目前使用密度：<span id="usedDensity">6.75</span> <span id="usedDensityUnit">lbs/US gal</span>
+        <br><small style="opacity:0.75">AFM 基準：6.75 lb/gal @ 0°C · 修正 −0.0058 lb/gal/°C</small>
       </div>
 
       <div class="btn-row">
-        <button type="button" onclick="calculateFromWeight()">計算</button>
+        <button type="button" class="primary" onclick="calcFromTop()">計算</button>
         <button type="button" class="secondary" onclick="clearAll()">清除</button>
       </div>
     </div>
 
-    <!-- Results (editable) -->
-    <div class="card" id="resultsCard">
-      <div class="card-title">需加燃油 (Fuel to Uplift) · 可直接輸入</div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px">需加燃油 (Fuel to Uplift) · 可直接輸入</div>
       <div class="results">
         <div class="result-item">
-          <span class="result-label">lbs</span>
-          <input type="number" id="addLbs" inputmode="decimal" placeholder="0" />
+          <span class="result-label" id="labelUpliftWt">lbs</span>
+          <input type="number" id="addWt" inputmode="decimal" placeholder="0" />
         </div>
         <div class="result-item">
-          <span class="result-label">US Gallons <small style="opacity:0.7">(FBO)</small></span>
+          <span class="result-label">US Gallons (FBO)</span>
           <input type="number" id="addGal" inputmode="decimal" placeholder="0" />
         </div>
         <div class="result-item">
-          <span class="result-label">Liters <small style="opacity:0.7">(油車)</small></span>
+          <span class="result-label">Liters (油車)</span>
           <input type="number" id="addLiters" inputmode="decimal" placeholder="0" />
         </div>
       </div>
 
-      <div class="quick-ref" id="totalRef" style="display:none;">
+      <div class="quick-ref" id="totalRef" style="display:none">
         <div class="quick-item">
           <div class="q-val" id="totalGal">—</div>
           <div class="q-label">總油量 US Gal</div>
@@ -383,21 +351,19 @@
           <div class="q-label">總油量 Liters</div>
         </div>
       </div>
-
-      <p class="hint">可從任意欄位輸入。先輸入 Gal 再改 lbs（如票據質量）可反推密度與油溫</p>
+      <p class="hint">先輸入 Gal，再改重量（票據質量）→ 反推密度與油溫</p>
     </div>
 
-    <!-- Limitations -->
     <div class="card limitations">
       <h3>G550 Fuel Limitations</h3>
       <table class="limit-table">
         <tr>
           <td>Max Usable Fuel</td>
-          <td>41,300 lbs<br>6,118 US gal<br>23,158 L</td>
+          <td>41,300 lbs<br>18,734 kg<br>6,118 US gal<br>23,158 L</td>
         </tr>
         <tr>
           <td>Left / Right Tank (each)</td>
-          <td>20,650 lbs<br>3,059 US gal<br>11,579 L</td>
+          <td>20,650 lbs<br>3,059 US gal</td>
         </tr>
         <tr>
           <td>Max Fuel Imbalance – Takeoff</td>
@@ -408,245 +374,265 @@
           <td>2,000 lbs</td>
         </tr>
         <tr>
-          <td>Max Ramp Weight</td>
-          <td>91,400 lbs</td>
-        </tr>
-        <tr>
-          <td>Max Takeoff Weight</td>
-          <td>91,000 lbs</td>
+          <td>Max Ramp / Takeoff Weight</td>
+          <td>91,400 / 91,000 lbs</td>
         </tr>
         <tr>
           <td>AFM Standard Density</td>
-          <td>6.75 lbs/US gal @ 0°C</td>
+          <td>6.75 lb/gal @ 0°C</td>
         </tr>
       </table>
-
       <div class="note">
-        <strong>Note:</strong> 實際加油時請以油車密度與飛機油量表為準。<br><br>
-        <strong>溫度密度修正：</strong> AFM 以 6.75 lbs/gal（約 0°C）為基準。油溫每升高 1°C，密度約降低 0.0058 lbs/gal（對應 Jet A 典型熱膨脹係數）。更改油溫會自動更新密度並重算體積；也可直接手動輸入實際密度覆寫。
+        <strong>Note:</strong> 實際加油請以油車密度與飛機油量表為準。<br><br>
+        <strong>溫度密度修正：</strong> AFM 6.75 lb/gal @ 0°C。每升高 1°C 密度約降 0.0058 lb/gal。可手動覆寫密度。
       </div>
     </div>
 
-    <footer>
-      Jet A Fuel Calculator · G550 · AFM 6.75 lbs/gal @ 0°C
-    </footer>
+    <footer>Jet A Fuel Calculator · G550 · AFM 6.75 lb/gal @ 0°C</footer>
   </div>
 
   <script>
     const US_GAL_TO_L = 3.785411784;
-    const AFM_DENSITY = 6.75;
-    const REF_TEMP_C = 0;
-    const DENSITY_SLOPE = -0.0058;
+    const LB_TO_KG = 0.45359237;
+    const AFM_DENSITY_LB = 6.75;          // lb/gal @ 0°C
+    const DENSITY_SLOPE_LB = -0.0058;     // lb/gal per °C
+    // kg/L equivalents
+    const LB_PER_GAL_TO_KG_PER_L = LB_TO_KG / US_GAL_TO_L; // ≈ 0.119826
 
-    let densityManuallyEdited = false;
-    let updating = false; // prevent recursive input events
+    let unit = 'lb'; // 'lb' or 'kg'
+    let densityManual = false;
+    let lock = false; // prevent re-entry
 
-    function getDensity() {
+    function densLbFromTemp(t) {
+      return AFM_DENSITY_LB + DENSITY_SLOPE_LB * t;
+    }
+    function tempFromDensLb(d) {
+      return (d - AFM_DENSITY_LB) / DENSITY_SLOPE_LB;
+    }
+
+    // Current density always stored/handled in lb/gal internally for slope math
+    function getDensLb() {
       let d = parseFloat(document.getElementById('density').value);
-      if (isNaN(d) || d <= 0) d = AFM_DENSITY;
+      if (isNaN(d) || d <= 0) return AFM_DENSITY_LB;
+      if (unit === 'kg') d = d / LB_PER_GAL_TO_KG_PER_L; // kg/L → lb/gal
       return d;
     }
 
-    function densityFromTemp(tempC) {
-      return AFM_DENSITY + DENSITY_SLOPE * (tempC - REF_TEMP_C);
+    function displayDens(dLb) {
+      if (unit === 'kg') {
+        const dKg = dLb * LB_PER_GAL_TO_KG_PER_L;
+        document.getElementById('density').value = dKg.toFixed(4);
+        document.getElementById('usedDensity').textContent = dKg.toFixed(4);
+      } else {
+        document.getElementById('density').value = dLb.toFixed(3);
+        document.getElementById('usedDensity').textContent = dLb.toFixed(3);
+      }
     }
 
-    function applyReverseDensity(lbs, gal) {
-      if (gal <= 0 || lbs <= 0) return null;
-      const d = lbs / gal;
-      if (d < 5.5 || d > 8.0) return null; // sanity check
-      densityManuallyEdited = true;
-      // density = AFM_DENSITY + DENSITY_SLOPE * T  →  T = (d - AFM) / slope
-      const t = (d - AFM_DENSITY) / DENSITY_SLOPE;
-      updating = true;
-      document.getElementById('density').value = d.toFixed(3);
-      document.getElementById('usedDensity').textContent = d.toFixed(3);
-      document.getElementById('temp').value = t.toFixed(1);
-      updating = false;
-      return d;
+    function wtToLb(v) { return unit === 'kg' ? v / LB_TO_KG : v; }
+    function lbToDisp(v) { return unit === 'kg' ? v * LB_TO_KG : v; }
+
+    function setUnit(u) {
+      if (u === unit) return;
+      const rem = parseFloat(document.getElementById('remaining').value);
+      const des = parseFloat(document.getElementById('desired').value);
+      const add = parseFloat(document.getElementById('addWt').value);
+      const dLb = getDensLb();
+
+      unit = u;
+      document.getElementById('btnLbs').classList.toggle('active', u === 'lb');
+      document.getElementById('btnKg').classList.toggle('active', u === 'kg');
+
+      const wUnit = u === 'kg' ? 'kg' : 'lbs';
+      const dUnit = u === 'kg' ? 'kg/L' : 'lb/gal';
+      document.getElementById('unitRem').textContent = wUnit;
+      document.getElementById('unitDes').textContent = wUnit;
+      document.getElementById('unitDen').textContent = dUnit;
+      document.getElementById('labelUpliftWt').textContent = wUnit;
+      document.getElementById('usedDensityUnit').textContent = u === 'kg' ? 'kg/L' : 'lbs/US gal';
+
+      lock = true;
+      if (!isNaN(rem)) document.getElementById('remaining').value = (u === 'kg' ? rem * LB_TO_KG : rem / LB_TO_KG).toFixed(0);
+      if (!isNaN(des)) document.getElementById('desired').value = (u === 'kg' ? des * LB_TO_KG : des / LB_TO_KG).toFixed(0);
+      if (!isNaN(add)) document.getElementById('addWt').value = (u === 'kg' ? add * LB_TO_KG : add / LB_TO_KG).toFixed(0);
+      displayDens(dLb);
+      lock = false;
+      updateRemainInfo();
     }
 
     function updateDensityFromTemp() {
-      if (densityManuallyEdited) return;
-      const temp = parseFloat(document.getElementById('temp').value);
-      if (isNaN(temp)) return;
-      const d = densityFromTemp(temp);
-      document.getElementById('density').value = d.toFixed(3);
-      document.getElementById('usedDensity').textContent = d.toFixed(3);
+      if (densityManual || lock) return;
+      const t = parseFloat(document.getElementById('temp').value);
+      if (isNaN(t)) return;
+      displayDens(densLbFromTemp(t));
     }
 
-    function updateTotals(desiredLbs, density) {
-      if (desiredLbs > 0) {
-        const totalGal = desiredLbs / density;
-        const totalLiters = totalGal * US_GAL_TO_L;
-        document.getElementById('totalGal').textContent = Math.round(totalGal).toLocaleString();
-        document.getElementById('totalLiters').textContent = Math.round(totalLiters).toLocaleString();
+    function updateRemainInfo() {
+      const remDisp = parseFloat(document.getElementById('remaining').value);
+      const t = parseFloat(document.getElementById('remainTemp').value);
+      const el = document.getElementById('remainInfo');
+      if (isNaN(remDisp) || remDisp <= 0 || isNaN(t)) {
+        el.textContent = '輸入餘油與溫度後顯示體積／密度';
+        return;
+      }
+      const remLb = wtToLb(remDisp);
+      const densLb = densLbFromTemp(t);
+      const gal = remLb / densLb;
+      const liters = gal * US_GAL_TO_L;
+      if (unit === 'kg') {
+        const densKg = densLb * LB_PER_GAL_TO_KG_PER_L;
+        el.textContent = Math.round(liters).toLocaleString() + ' L · ' + densKg.toFixed(4) + ' kg/L';
+      } else {
+        el.textContent = Math.round(gal).toLocaleString() + ' US gal · ' + densLb.toFixed(3) + ' lb/gal';
+      }
+    }
+
+    function showTotals(desiredLb, densLb) {
+      if (desiredLb > 0 && densLb > 0) {
+        const g = desiredLb / densLb;
+        document.getElementById('totalGal').textContent = Math.round(g).toLocaleString();
+        document.getElementById('totalLiters').textContent = Math.round(g * US_GAL_TO_L).toLocaleString();
         document.getElementById('totalRef').style.display = 'grid';
       } else {
         document.getElementById('totalRef').style.display = 'none';
       }
     }
 
-    function setUpliftFields(lbs, gal, liters, warn) {
-      updating = true;
-      document.getElementById('addLbs').value = Math.round(lbs);
-      document.getElementById('addGal').value = Math.round(gal);
-      document.getElementById('addLiters').value = Math.round(liters);
-      document.getElementById('addLbs').className = warn ? 'warn' : '';
-      updating = false;
-    }
+    // TOP → bottom: Remaining + Desired → Uplift
+    function calcFromTop() {
+      if (lock) return;
+      const remLb = wtToLb(parseFloat(document.getElementById('remaining').value) || 0);
+      const desLb = wtToLb(parseFloat(document.getElementById('desired').value) || 0);
+      const densLb = getDensLb();
+      displayDens(densLb);
 
-    // From top: Remaining + Desired → Uplift
-    function calculateFromWeight() {
-      const remaining = parseFloat(document.getElementById('remaining').value) || 0;
-      const desired = parseFloat(document.getElementById('desired').value) || 0;
-      const density = getDensity();
-      document.getElementById('usedDensity').textContent = density.toFixed(3);
-
-      const addLbs = desired - remaining;
-
-      if (addLbs <= 0) {
-        setUpliftFields(addLbs, 0, 0, true);
-        document.getElementById('totalRef').style.display = 'none';
-        return;
-      }
-
-      const addGal = addLbs / density;
-      const addLiters = addGal * US_GAL_TO_L;
-      setUpliftFields(addLbs, addGal, addLiters, desired > 41300);
-      updateTotals(desired, density);
-    }
-
-    // From uplift lbs → if gal already set, reverse density/temp; else convert with current density
-    function fromUpliftLbs() {
-      if (updating) return;
-      const remaining = parseFloat(document.getElementById('remaining').value) || 0;
-      const addLbs = parseFloat(document.getElementById('addLbs').value) || 0;
-      const existingGal = parseFloat(document.getElementById('addGal').value) || 0;
-
-      let density = getDensity();
-      let addGal, addLiters;
-
-      // Ticket reverse: user overwrote lbs against known gallons → derive density & temp
-      if (existingGal > 0 && addLbs > 0) {
-        const rev = applyReverseDensity(addLbs, existingGal);
-        if (rev) {
-          density = rev;
-          addGal = existingGal;
-          addLiters = addGal * US_GAL_TO_L;
-        } else {
-          addGal = addLbs / density;
-          addLiters = addGal * US_GAL_TO_L;
-        }
+      const addLb = desLb - remLb;
+      lock = true;
+      if (addLb > 0) {
+        const gal = addLb / densLb;
+        document.getElementById('addWt').value = Math.round(lbToDisp(addLb));
+        document.getElementById('addGal').value = Math.round(gal);
+        document.getElementById('addLiters').value = Math.round(gal * US_GAL_TO_L);
+        document.getElementById('addWt').className = desLb > 41300 ? 'warn' : '';
+        showTotals(desLb, densLb);
       } else {
-        addGal = addLbs / density;
-        addLiters = addGal * US_GAL_TO_L;
+        document.getElementById('addWt').value = '';
+        document.getElementById('addGal').value = '';
+        document.getElementById('addLiters').value = '';
+        document.getElementById('totalRef').style.display = 'none';
+      }
+      lock = false;
+    }
+
+    // Bottom weight edited
+    function onAddWt() {
+      if (lock) return;
+      const addDisp = parseFloat(document.getElementById('addWt').value);
+      if (isNaN(addDisp)) return;
+      const addLb = wtToLb(addDisp);
+      const gal = parseFloat(document.getElementById('addGal').value);
+      const remLb = wtToLb(parseFloat(document.getElementById('remaining').value) || 0);
+
+      lock = true;
+
+      if (!isNaN(gal) && gal > 0 && addLb > 0) {
+        // Reverse: lock gal, derive density from weight/gal
+        const densLb = addLb / gal;
+        densityManual = true;
+        displayDens(densLb);
+        if (densLb >= 5.8 && densLb <= 7.5) {
+          document.getElementById('temp').value = tempFromDensLb(densLb).toFixed(1);
+        }
+        document.getElementById('addLiters').value = Math.round(gal * US_GAL_TO_L);
+      } else {
+        const densLb = getDensLb();
+        const g = addLb / densLb;
+        document.getElementById('addGal').value = addLb > 0 ? Math.round(g) : '';
+        document.getElementById('addLiters').value = addLb > 0 ? Math.round(g * US_GAL_TO_L) : '';
       }
 
-      const desired = remaining + addLbs;
-
-      updating = true;
-      document.getElementById('addGal').value = Math.round(addGal);
-      document.getElementById('addLiters').value = Math.round(addLiters);
-      document.getElementById('desired').value = Math.round(desired);
-      document.getElementById('addLbs').className = desired > 41300 ? 'warn' : '';
-      updating = false;
-
-      updateTotals(desired, density);
+      const desLb = remLb + addLb;
+      document.getElementById('desired').value = desLb > 0 ? Math.round(lbToDisp(desLb)) : '';
+      document.getElementById('addWt').className = desLb > 41300 ? 'warn' : '';
+      showTotals(desLb, getDensLb());
+      lock = false;
     }
 
-    // From uplift gallons → update lbs/L + Desired Total (use current density)
-    function fromUpliftGal() {
-      if (updating) return;
-      const remaining = parseFloat(document.getElementById('remaining').value) || 0;
-      const addGal = parseFloat(document.getElementById('addGal').value) || 0;
-      const density = getDensity();
+    // Bottom gallons edited
+    function onAddGal() {
+      if (lock) return;
+      const gal = parseFloat(document.getElementById('addGal').value);
+      if (isNaN(gal)) return;
+      const densLb = getDensLb();
+      const addLb = gal * densLb;
+      const remLb = wtToLb(parseFloat(document.getElementById('remaining').value) || 0);
+      const desLb = remLb + addLb;
 
-      const addLbs = addGal * density;
-      const addLiters = addGal * US_GAL_TO_L;
-      const desired = remaining + addLbs;
-
-      updating = true;
-      document.getElementById('addLbs').value = Math.round(addLbs);
-      document.getElementById('addLiters').value = Math.round(addLiters);
-      document.getElementById('desired').value = Math.round(desired);
-      document.getElementById('addLbs').className = desired > 41300 ? 'warn' : '';
-      updating = false;
-
-      updateTotals(desired, density);
+      lock = true;
+      document.getElementById('addWt').value = gal > 0 ? Math.round(lbToDisp(addLb)) : '';
+      document.getElementById('addLiters').value = gal > 0 ? Math.round(gal * US_GAL_TO_L) : '';
+      document.getElementById('desired').value = desLb > 0 ? Math.round(lbToDisp(desLb)) : '';
+      document.getElementById('addWt').className = desLb > 41300 ? 'warn' : '';
+      showTotals(desLb, densLb);
+      lock = false;
     }
 
-    // From uplift liters → update lbs/Gal + Desired Total
-    function fromUpliftLiters() {
-      if (updating) return;
-      const remaining = parseFloat(document.getElementById('remaining').value) || 0;
-      const addLiters = parseFloat(document.getElementById('addLiters').value) || 0;
-      const density = getDensity();
+    // Bottom liters edited
+    function onAddLiters() {
+      if (lock) return;
+      const lit = parseFloat(document.getElementById('addLiters').value);
+      if (isNaN(lit)) return;
+      const gal = lit / US_GAL_TO_L;
+      const densLb = getDensLb();
+      const addLb = gal * densLb;
+      const remLb = wtToLb(parseFloat(document.getElementById('remaining').value) || 0);
+      const desLb = remLb + addLb;
 
-      const addGal = addLiters / US_GAL_TO_L;
-      const addLbs = addGal * density;
-      const desired = remaining + addLbs;
-
-      updating = true;
-      document.getElementById('addLbs').value = Math.round(addLbs);
-      document.getElementById('addGal').value = Math.round(addGal);
-      document.getElementById('desired').value = Math.round(desired);
-      document.getElementById('addLbs').className = desired > 41300 ? 'warn' : '';
-      updating = false;
-
-      updateTotals(desired, density);
+      lock = true;
+      document.getElementById('addWt').value = lit > 0 ? Math.round(lbToDisp(addLb)) : '';
+      document.getElementById('addGal').value = lit > 0 ? Math.round(gal) : '';
+      document.getElementById('desired').value = desLb > 0 ? Math.round(lbToDisp(desLb)) : '';
+      document.getElementById('addWt').className = desLb > 41300 ? 'warn' : '';
+      showTotals(desLb, densLb);
+      lock = false;
     }
 
     function clearAll() {
+      lock = true;
       document.getElementById('remaining').value = '';
+      document.getElementById('remainTemp').value = '';
       document.getElementById('desired').value = '';
       document.getElementById('temp').value = '0';
-      document.getElementById('density').value = '6.75';
-      densityManuallyEdited = false;
-      document.getElementById('usedDensity').textContent = '6.75';
-      updating = true;
-      document.getElementById('addLbs').value = '';
+      densityManual = false;
+      displayDens(AFM_DENSITY_LB);
+      document.getElementById('addWt').value = '';
       document.getElementById('addGal').value = '';
       document.getElementById('addLiters').value = '';
-      updating = false;
+      document.getElementById('addWt').className = '';
       document.getElementById('totalRef').style.display = 'none';
+      document.getElementById('remainInfo').textContent = '輸入餘油與溫度後顯示體積／密度';
+      lock = false;
     }
 
-    // Event listeners
+    // Events
     document.getElementById('temp').addEventListener('input', () => {
-      densityManuallyEdited = false;
+      densityManual = false;
       updateDensityFromTemp();
-      if (document.getElementById('remaining').value || document.getElementById('desired').value) {
-        calculateFromWeight();
-      }
+      calcFromTop();
     });
-
     document.getElementById('density').addEventListener('input', () => {
-      densityManuallyEdited = true;
-      const d = parseFloat(document.getElementById('density').value);
-      if (!isNaN(d)) document.getElementById('usedDensity').textContent = d.toFixed(3);
-      if (document.getElementById('remaining').value || document.getElementById('desired').value) {
-        calculateFromWeight();
-      }
+      densityManual = true;
+      const d = getDensLb();
+      document.getElementById('usedDensity').textContent =
+        unit === 'kg' ? (d * LB_PER_GAL_TO_KG_PER_L).toFixed(4) : d.toFixed(3);
+      calcFromTop();
     });
-
-    ['remaining', 'desired'].forEach(id => {
-      document.getElementById(id).addEventListener('input', () => {
-        if (document.getElementById('remaining').value || document.getElementById('desired').value) {
-          calculateFromWeight();
-        }
-      });
-    });
-
-    document.getElementById('addLbs').addEventListener('input', fromUpliftLbs);
-    document.getElementById('addGal').addEventListener('input', fromUpliftGal);
-    document.getElementById('addLiters').addEventListener('input', fromUpliftLiters);
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') calculateFromWeight();
-    });
-
-    updateDensityFromTemp();
+    document.getElementById('remaining').addEventListener('input', () => { calcFromTop(); updateRemainInfo(); });
+    document.getElementById('remainTemp').addEventListener('input', updateRemainInfo);
+    document.getElementById('desired').addEventListener('input', calcFromTop);
+    document.getElementById('addWt').addEventListener('input', onAddWt);
+    document.getElementById('addGal').addEventListener('input', onAddGal);
+    document.getElementById('addLiters').addEventListener('input', onAddLiters);
   </script>
 </body>
 </html>

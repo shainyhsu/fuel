@@ -351,6 +351,10 @@
           <div class="q-val" id="totalLiters">—</div>
           <div class="q-label">總油量 Liters</div>
         </div>
+        <div class="quick-item" id="avgTempBox" style="display:none; grid-column: 1 / -1;">
+          <div class="q-val" id="avgTemp">—</div>
+          <div class="q-label">最終均溫 (質量加權)</div>
+        </div>
       </div>
       <p class="hint">先輸入 Gal，再改重量（票據質量）→ 反推密度與油溫</p>
     </div>
@@ -494,8 +498,25 @@
         document.getElementById('totalGal').textContent = Math.round(g).toLocaleString();
         document.getElementById('totalLiters').textContent = Math.round(g * US_GAL_TO_L).toLocaleString();
         document.getElementById('totalRef').style.display = 'grid';
+
+        // Mass-weighted final average temperature
+        const remLb = wtToLb(parseFloat(document.getElementById('remaining').value) || 0);
+        const remT = parseFloat(document.getElementById('remainTemp').value);
+        const upT = parseFloat(document.getElementById('temp').value);
+        const addLb = desiredLb - remLb;
+        if (!isNaN(remT) && !isNaN(upT) && remLb > 0 && addLb > 0) {
+          const avg = (remLb * remT + addLb * upT) / desiredLb;
+          document.getElementById('avgTemp').textContent = avg.toFixed(1) + ' °C';
+          document.getElementById('avgTempBox').style.display = 'block';
+        } else if (!isNaN(upT) && addLb > 0 && remLb <= 0) {
+          document.getElementById('avgTemp').textContent = upT.toFixed(1) + ' °C';
+          document.getElementById('avgTempBox').style.display = 'block';
+        } else {
+          document.getElementById('avgTempBox').style.display = 'none';
+        }
       } else {
         document.getElementById('totalRef').style.display = 'none';
+        document.getElementById('avgTempBox').style.display = 'none';
       }
     }
 
@@ -629,7 +650,14 @@
       calcFromTop();
     });
     document.getElementById('remaining').addEventListener('input', () => { calcFromTop(); updateRemainInfo(); });
-    document.getElementById('remainTemp').addEventListener('input', updateRemainInfo);
+    document.getElementById('remainTemp').addEventListener('input', () => {
+      updateRemainInfo();
+      // refresh avg temp if totals visible
+      const des = parseFloat(document.getElementById('desired').value);
+      if (!isNaN(des) && des > 0) {
+        showTotals(wtToLb(des), getDensLb());
+      }
+    });
     document.getElementById('desired').addEventListener('input', calcFromTop);
     document.getElementById('addWt').addEventListener('input', onAddWt);
     document.getElementById('addGal').addEventListener('input', onAddGal);

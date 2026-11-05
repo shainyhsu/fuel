@@ -356,7 +356,7 @@
     </div>
 
     <!-- Results (editable) -->
-    <div class="card" id="resultsCard" style="display: none;">
+    <div class="card" id="resultsCard">
       <div class="card-title">需加燃油 (Fuel to Uplift) · 可直接輸入</div>
       <div class="results">
         <div class="result-item">
@@ -460,10 +460,6 @@
       document.getElementById('usedDensity').textContent = d.toFixed(3);
     }
 
-    function showResults() {
-      document.getElementById('resultsCard').style.display = 'block';
-    }
-
     function updateTotals(desiredLbs, density) {
       if (desiredLbs > 0) {
         const totalGal = desiredLbs / density;
@@ -493,7 +489,6 @@
       document.getElementById('usedDensity').textContent = density.toFixed(3);
 
       const addLbs = desired - remaining;
-      showResults();
 
       if (addLbs <= 0) {
         setUpliftFields(addLbs, 0, 0, true);
@@ -577,12 +572,12 @@
       document.getElementById('density').value = '6.75';
       densityManuallyEdited = false;
       document.getElementById('usedDensity').textContent = '6.75';
-      document.getElementById('resultsCard').style.display = 'none';
       updating = true;
       document.getElementById('addLbs').value = '';
       document.getElementById('addGal').value = '';
       document.getElementById('addLiters').value = '';
       updating = false;
+      document.getElementById('totalRef').style.display = 'none';
     }
 
     // Event listeners

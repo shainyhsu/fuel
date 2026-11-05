@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Jet A1 Fuel Calculator</title>
+  <title>Jet A Fuel Calculator</title>
   <style>
     :root {
       --bg: #0f1419;
@@ -303,8 +303,8 @@
 <body>
   <div class="container">
     <header>
-      <h1>Jet A1 Fuel Calculator</h1>
-      <p>G550 · lbs → US Gal / Liters · 含油溫密度修正</p>
+      <h1>Jet A Fuel Calculator</h1>
+      <p>G550 · lbs ↔ US Gal / Liters · 含油溫密度修正</p>
     </header>
 
     <!-- Calculator -->
@@ -384,7 +384,7 @@
         </div>
       </div>
 
-      <p class="hint">可從任意欄位輸入（lbs / Gal / L），其餘自動換算</p>
+      <p class="hint">可從任意欄位輸入。先輸入 Gal 再改 lbs（如票據質量）可反推密度與油溫</p>
     </div>
 
     <!-- Limitations -->
@@ -423,12 +423,12 @@
 
       <div class="note">
         <strong>Note:</strong> 實際加油時請以油車密度與飛機油量表為準。<br><br>
-        <strong>溫度密度修正：</strong> AFM 以 6.75 lbs/gal（約 0°C）為基準。油溫每升高 1°C，密度約降低 0.0058 lbs/gal（對應 Jet A-1 典型熱膨脹係數）。更改油溫會自動更新密度並重算體積；也可直接手動輸入實際密度覆寫。
+        <strong>溫度密度修正：</strong> AFM 以 6.75 lbs/gal（約 0°C）為基準。油溫每升高 1°C，密度約降低 0.0058 lbs/gal（對應 Jet A 典型熱膨脹係數）。更改油溫會自動更新密度並重算體積；也可直接手動輸入實際密度覆寫。
       </div>
     </div>
 
     <footer>
-      Jet A1 Fuel Calculator · G550 · AFM 6.75 lbs/gal @ 0°C
+      Jet A Fuel Calculator · G550 · AFM 6.75 lbs/gal @ 0°C
     </footer>
   </div>
 
@@ -449,6 +449,21 @@
 
     function densityFromTemp(tempC) {
       return AFM_DENSITY + DENSITY_SLOPE * (tempC - REF_TEMP_C);
+    }
+
+    function applyReverseDensity(lbs, gal) {
+      if (gal <= 0 || lbs <= 0) return null;
+      const d = lbs / gal;
+      if (d < 5.5 || d > 8.0) return null; // sanity check
+      densityManuallyEdited = true;
+      // density = AFM_DENSITY + DENSITY_SLOPE * T  →  T = (d - AFM) / slope
+      const t = (d - AFM_DENSITY) / DENSITY_SLOPE;
+      updating = true;
+      document.getElementById('density').value = d.toFixed(3);
+      document.getElementById('usedDensity').textContent = d.toFixed(3);
+      document.getElementById('temp').value = t.toFixed(1);
+      updating = false;
+      return d;
     }
 
     function updateDensityFromTemp() {
@@ -502,15 +517,32 @@
       updateTotals(desired, density);
     }
 
-    // From uplift lbs → update gal/L + Desired Total
+    // From uplift lbs → if gal already set, reverse density/temp; else convert with current density
     function fromUpliftLbs() {
       if (updating) return;
       const remaining = parseFloat(document.getElementById('remaining').value) || 0;
       const addLbs = parseFloat(document.getElementById('addLbs').value) || 0;
-      const density = getDensity();
+      const existingGal = parseFloat(document.getElementById('addGal').value) || 0;
 
-      const addGal = addLbs / density;
-      const addLiters = addGal * US_GAL_TO_L;
+      let density = getDensity();
+      let addGal, addLiters;
+
+      // Ticket reverse: user overwrote lbs against known gallons → derive density & temp
+      if (existingGal > 0 && addLbs > 0) {
+        const rev = applyReverseDensity(addLbs, existingGal);
+        if (rev) {
+          density = rev;
+          addGal = existingGal;
+          addLiters = addGal * US_GAL_TO_L;
+        } else {
+          addGal = addLbs / density;
+          addLiters = addGal * US_GAL_TO_L;
+        }
+      } else {
+        addGal = addLbs / density;
+        addLiters = addGal * US_GAL_TO_L;
+      }
+
       const desired = remaining + addLbs;
 
       updating = true;
@@ -523,7 +555,7 @@
       updateTotals(desired, density);
     }
 
-    // From uplift gallons → update lbs/L + Desired Total
+    // From uplift gallons → update lbs/L + Desired Total (use current density)
     function fromUpliftGal() {
       if (updating) return;
       const remaining = parseFloat(document.getElementById('remaining').value) || 0;

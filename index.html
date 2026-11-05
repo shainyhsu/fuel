@@ -26,7 +26,7 @@
       min-height: 100vh;
     }
     .container { max-width: 480px; margin: 0 auto; }
-    header { text-align: center; margin-bottom: 20px; padding-top: 8px; }
+    header { text-align: center; margin: 8px 0 20px; padding: 12px 0 4px; }
     header h1 { font-size: 1.5rem; font-weight: 700; }
     header p { color: var(--muted); font-size: 0.875rem; margin-top: 4px; }
 
@@ -260,11 +260,6 @@
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Jet A Fuel Calculator</h1>
-      <p>G550 · Weight ↔ US Gal / Liters · 油溫密度修正</p>
-    </header>
-
     <div class="card">
       <div class="card-header">
         <div class="card-title">加油計算</div>
@@ -358,6 +353,11 @@
       </div>
       <p class="hint">先輸入 Gal，再改重量（票據質量）→ 反推密度與油溫</p>
     </div>
+
+    <header>
+      <h1>Jet A Fuel Calculator</h1>
+      <p>G550 · Weight ↔ US Gal / Liters · 油溫密度修正</p>
+    </header>
 
     <div class="card limitations">
       <h3>G550 Fuel Limitations</h3>

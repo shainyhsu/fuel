@@ -275,14 +275,21 @@
     :root[data-theme="light"]{color-scheme:light;--bg:#eef3f0;--card:#ffffff;--border:#d2ddd6;--text:#14201a;--muted:#5a7066;--accent:#2f8a5f;--accent-hover:#25724d;--green:#1d8a4b;--amber:#a87700}
     :root[data-theme="light"] .note{background:rgba(47,138,95,.09)}
   
-    /* 寬螢幕兩欄：左欄加油計算，右欄需加燃油＋限制表 */
+    /* 寬螢幕：上排兩張卡等寬等高，下排限制表橫跨全寬，盡量一屏看完 */
     @media (min-width: 900px) {
-      body { padding: 28px 24px; }
-      .container { max-width: 1040px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 20px; align-items: start; }
-      .container > header, .container > footer { grid-column: 1 / -1; }
-      .container > .card:nth-of-type(1) { grid-column: 1; grid-row: 2 / span 2; }
+      body { padding: 20px 24px; }
+      .container { max-width: 1100px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 20px; align-items: stretch; }
+      .container > header { grid-column: 1 / -1; margin-bottom: 0; }
+      .container > footer { grid-column: 1 / -1; }
+      .container > .card { margin-bottom: 0; }
+      .container > .card:nth-of-type(1) { grid-column: 1; grid-row: 2; }
       .container > .card:nth-of-type(2) { grid-column: 2; grid-row: 2; }
-      .container > .card:nth-of-type(3) { grid-column: 2; grid-row: 3; }
+      .container > .card:nth-of-type(3) { grid-column: 1 / -1; grid-row: 3; display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: 4px 24px; align-items: start; }
+      .limitations h3 { grid-column: 1 / -1; }
+      .limitations .limit-table tbody { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 24px; }
+      .limitations .limit-table tr { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--border); }
+      .limitations .limit-table td { border-bottom: none !important; width: auto !important; }
+      .limitations .note { margin-top: 0; }
     }
   </style>
 </head>

@@ -274,6 +274,16 @@
     .theme-toggle svg{width:19px;height:19px}
     :root[data-theme="light"]{color-scheme:light;--bg:#eef3f0;--card:#ffffff;--border:#d2ddd6;--text:#14201a;--muted:#5a7066;--accent:#2f8a5f;--accent-hover:#25724d;--green:#1d8a4b;--amber:#a87700}
     :root[data-theme="light"] .note{background:rgba(47,138,95,.09)}
+  
+    /* 寬螢幕兩欄：左欄加油計算，右欄需加燃油＋限制表 */
+    @media (min-width: 900px) {
+      body { padding: 28px 24px; }
+      .container { max-width: 1040px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 20px; align-items: start; }
+      .container > header, .container > footer { grid-column: 1 / -1; }
+      .container > .card:nth-of-type(1) { grid-column: 1; grid-row: 2 / span 2; }
+      .container > .card:nth-of-type(2) { grid-column: 2; grid-row: 2; }
+      .container > .card:nth-of-type(3) { grid-column: 2; grid-row: 3; }
+    }
   </style>
 </head>
 <body>

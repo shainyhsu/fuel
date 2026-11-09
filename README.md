@@ -35,6 +35,7 @@ Single HTML page (HTML, CSS and plain JavaScript) on GitHub Pages. Fully client-
 
 ## Version history
 
+- V11 | 2026-11-09 11:24 | Wide-screen layout: the two top cards share equal width and height, and the G550 fuel limitations span the full width below, so the page fits on one screen.
 - V10 | 2026-11-09 10:14 | Added a two-column layout for wide screens and an All Rights Reserved license.
 - V9 | 2026-11-09 09:23 | Added a light/dark theme toggle at the top right, dark by default.
 - V8 | 2026-11-08 20:28 | Added search-engine and link-preview information, and allowed pinch-to-zoom on mobile.

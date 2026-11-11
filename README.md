@@ -35,6 +35,7 @@ Single HTML page (HTML, CSS and plain JavaScript) on GitHub Pages. Fully client-
 
 ## Version history
 
+- V13 | 2026-11-11 10:07 | New license terms: free to use in a browser for personal, work, school or club use, and the results you make are yours to share; copying, paid services built on it, and AI training need written permission. A License link sits at the bottom of the page
 - V12 | 2026-11-10 00:18 | Added a link-preview image (1200×630) so shared links show a picture in LINE, Facebook and other apps.
 - V11 | 2026-11-09 11:24 | Wide-screen layout: the two top cards share equal width and height, and the G550 fuel limitations span the full width below, so the page fits on one screen.
 - V10 | 2026-11-09 10:14 | Added a two-column layout for wide screens and an All Rights Reserved license.
